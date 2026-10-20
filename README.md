@@ -2,17 +2,17 @@
 
 Um Terminal Interativo de Usuário (**TUI - Terminal User Interface**) híbrido (**Python + C**) projetado como **middleware interceptador e otimizador de prompts** entre o desenvolvedor e ferramentas de execução/harnesses (como o **Google Antigravity `agy`**, modelos locais via **Ollama**, scripts de teste ou APIs em nuvem), além de fornecer um **Terminal Linux real e persistente (PTY)** integrado.
 
-Construído com um visual **retrô clássico de terminal de fósforo âmbar** (estilo VT220 / mainframe), seguindo rigorosamente os princípios **SOLID** e **Clean Architecture** para garantir segurança, modularidade e máxima economia de tokens.
+Construído com um visual **retrô clássico de terminal de fósforo azul** (estilo IBM PC / Borland / Norton Commander), seguindo rigorosamente os princípios **SOLID** e **Clean Architecture** para garantir segurança, modularidade e máxima economia de tokens.
 
 ---
 
 ## 🎯 Objetivos Principais
 
-1. **Interceptação e Compressão de Prompts (PT-BR -> EN):** Recebe prompts em português, remove saudações/floreios e traduz para inglês técnico denso via SLM local (Ollama) ou motor determinístico offline, preservando 100% de blocos de código, variáveis e flags.
+1. **Interceptação e Compressão de Prompts (PT-BR -> EN):** Recebe prompts em português, remove saudações/floreios e traduz para inglês técnico denso via SLM local (Ollama) ou **Compressor Híbrido PT->EN embutido** (quando o Ollama não está instalado), preservando 100% de blocos de código, variáveis e flags.
 2. **Revisão Humana (Human-in-the-Loop):** Exibe estimativa de tokens economizados (calculada em $O(N)$ pelo núcleo em C) e permite **Aprovar (`y`)**, **Editar (`e`)** ou **Descartar (`n`)** antes do envio.
-3. **Despacho Multi-Harness (Padrão Strategy):** Envia o prompt aprovado para o **Antigravity (`agy`)**, **Ollama Local**, **Google Gemini API** ou **Shell Pipe**.
-4. **Gerenciamento de Modelos e VRAM:** Detecta o `agy` e seus modelos, lista modelos instalados no Ollama, oferece catálogo guiado para baixar novos modelos (`ollama pull`) e libera VRAM imediatamente (`F2`).
-5. **Terminal Linux Real Persistente (PTY Nativo em C):** Emula um terminal Linux verdadeiro via `forkpty()` e `/proc/<pid>/cwd`, preservando mudanças de diretório (`cd`), variáveis de ambiente (`export`), `clear` e envio de sinais POSIX (`SIGINT` / `Ctrl+C`).
+3. **Contador de Uso de Tokens estilo AGY / VS Code:** Mostra na lateral direita (e na barra superior) os tokens de entrada (EN), tokens de saída da resposta, tokens poupados na sessão e uso da janela de contexto do modelo ativo.
+4. **Despacho Multi-Harness (Padrão Strategy):** Envia o prompt aprovado para o **Antigravity (`agy --dangerously-skip-permissions --print`)**, **Ollama Local**, **Google Gemini API** ou **Shell Pipe**.
+5. **Terminal Linux Real Manipulável Direto na Janela (PTY Nativo em C):** Permite digitar diretamente dentro da própria janela do terminal (`TerminalLinuxDireto`), com suporte a `Enter`, histórico nas setas `Cima`/`Baixo`, autocompletar com `Tab`, `Ctrl+L` para limpar e `Ctrl+C` (`SIGINT`), mantendo estado real de diretório (`cd`) e variáveis (`export`).
 
 ---
 

@@ -1,66 +1,75 @@
 /* =========================================================================
-   TEMA RETRÔ: TERMINAL DE FÓSFORO ÂMBAR (VT220 / MAINFRAME MONOCROMÁTICO)
-   Design austero, sem cores chamativas, focado em legibilidade e alto contraste.
+   TEMA RETRÔ: TERMINAL DE FÓSFORO AZUL (IBM PC / BORLAND / NORTON COMMANDER)
+   Design monocromático em tons de azul profundo e azul-claro fosforescente.
    ========================================================================= */
 
 Screen {
-    background: #0f0b04;
-    color: #ffb000;
+    background: #040a14;
+    color: #8cc8ff;
 }
 
 /* Barra Superior de Status (Header do Terminal) */
 #top-status-bar {
     dock: top;
     height: 3;
-    background: #1a1205;
-    color: #ffb000;
-    border-bottom: solid #664400;
+    background: #081529;
+    color: #99d6ff;
+    border-bottom: solid #1f5c99;
     padding: 0 1;
     content-align: left middle;
     text-style: bold;
 }
 
 #top-status-bar.alerta-memoria {
-    background: #331500;
-    color: #ffcc00;
-    border-bottom: double #ff9900;
+    background: #1a2a4a;
+    color: #00e5ff;
+    border-bottom: double #3399ff;
 }
 
 /* Abas Principais de Navegação */
 TabbedContent {
     height: 1fr;
-    background: #0f0b04;
+    width: 100%;
+    background: #040a14;
+}
+
+ContentSwitcher {
+    height: 1fr;
+    width: 100%;
 }
 
 Tabs {
     dock: top;
-    background: #140d04;
-    color: #996b00;
-    border-bottom: solid #664400;
+    background: #071120;
+    color: #4d88cc;
+    border-bottom: solid #1f5c99;
     height: 3;
 }
 
 Tab {
     padding: 0 2;
-    color: #aa7700;
-    background: #140d04;
+    color: #5c99e6;
+    background: #071120;
 }
 
 Tab.-active {
-    color: #0f0b04;
-    background: #ffb000;
+    color: #040a14;
+    background: #4da6ff;
     text-style: bold;
 }
 
 TabPane {
+    height: 1fr;
+    width: 100%;
     padding: 0 1;
-    background: #0f0b04;
+    background: #040a14;
 }
 
-/* Colunas e Caixas de Painéis */
+/* Colunas Lado a Lado */
 .linha-dupla {
     layout: horizontal;
     height: 1fr;
+    width: 100%;
 }
 
 .coluna-esq {
@@ -76,31 +85,60 @@ TabPane {
 }
 
 .painel-retro {
-    border: solid #664400;
-    background: #140d04;
+    border: solid #1f5c99;
+    background: #071120;
     padding: 0 1;
     margin-bottom: 1;
 }
 
+#painel-entrada {
+    height: 33%;
+}
+
+#painel-preview {
+    height: 34%;
+}
+
+#painel-saida {
+    height: 33%;
+}
+
+#painel-destino {
+    height: 38%;
+}
+
+#painel-tokens-modelo {
+    height: 34%;
+}
+
+#painel-infra {
+    height: 28%;
+}
+
+#painel-terminal-full {
+    height: 1fr;
+    width: 100%;
+}
+
 .titulo-painel {
-    color: #ffcc00;
+    color: #4da6ff;
     text-style: bold;
     margin-bottom: 0;
 }
 
-/* Caixas de Texto (Prompt e Preview) */
+/* Caixas de Texto (Prompt, Preview e Terminal Direto) */
 TextArea {
     height: 1fr;
-    border: solid #442d00;
-    background: #080602;
-    color: #ffb000;
+    border: solid #143d66;
+    background: #02060d;
+    color: #99d1ff;
 }
 
 TextArea:focus {
-    border: solid #ffb000;
+    border: solid #4da6ff;
 }
 
-/* Linha de Ações e Botões Retrô */
+/* Linha de Ações e Botões Retrô Azuis */
 .linha-botoes {
     layout: horizontal;
     height: 3;
@@ -109,123 +147,114 @@ TextArea:focus {
 }
 
 Button {
-    background: #241603;
-    color: #ffb000;
-    border: solid #774f00;
+    background: #0a1c36;
+    color: #8cc8ff;
+    border: solid #266bb3;
     margin-right: 1;
     min-width: 14;
     height: 3;
 }
 
 Button:hover {
-    background: #3d2605;
-    color: #ffe082;
-    border: solid #ffb000;
+    background: #123059;
+    color: #cce6ff;
+    border: solid #4da6ff;
 }
 
 Button:focus {
-    background: #ffb000;
-    color: #0f0b04;
+    background: #4da6ff;
+    color: #040a14;
     text-style: bold;
 }
 
 Button.-primary {
-    background: #331f00;
-    color: #ffcc00;
-    border: solid #aa7200;
+    background: #0d284d;
+    color: #99d6ff;
+    border: solid #3385ff;
 }
 
 Button.-success {
-    background: #2a2200;
-    color: #ffea75;
-    border: solid #bfa004;
+    background: #0b2e47;
+    color: #66e0ff;
+    border: solid #00b8e6;
 }
 
 Button.-error {
-    background: #280b00;
-    color: #ff8844;
-    border: solid #882200;
+    background: #191838;
+    color: #809fff;
+    border: solid #3d5c99;
 }
 
 /* Banners de Informação e Notificação */
 #banner-economia {
     height: 1;
-    color: #ffe082;
+    color: #33ccff;
     text-style: bold;
 }
 
 #caixa-docker, #caixa-k8s, #caixa-modelos-instalados, #caixa-catalogo {
     height: 1fr;
     overflow-y: auto;
-    background: #080602;
-    border: solid #442d00;
+    background: #02060d;
+    border: solid #143d66;
     padding: 0 1;
-    color: #ffb000;
+    color: #8cc8ff;
 }
 
-/* Tabela e Seletores Retrô */
+/* Tabela e Seletores Retrô Azuis */
 DataTable {
-    background: #080602;
-    color: #ffb000;
-    border: solid #442d00;
+    background: #02060d;
+    color: #8cc8ff;
+    border: solid #143d66;
     height: 1fr;
 }
 
 DataTable > .datatable--header {
-    background: #1a1205;
-    color: #ffcc00;
+    background: #081529;
+    color: #4da6ff;
     text-style: bold;
 }
 
 Select {
-    background: #1a1205;
-    color: #ffb000;
-    border: solid #664400;
+    background: #081529;
+    color: #8cc8ff;
+    border: solid #1f5c99;
 }
 
 SelectCurrent {
-    background: #1a1205;
-    color: #ffb000;
+    background: #081529;
+    color: #8cc8ff;
 }
 
-/* Terminal Integrado */
-#console-terminal {
+/* Terminal Interativo Manipulável Direto na Janela */
+#janela-terminal-direta {
     height: 1fr;
-    background: #050401;
-    border: solid #664400;
-    color: #ffb000;
-    overflow-y: auto;
-    padding: 0 1;
+    width: 100%;
+    background: #02060d;
+    border: solid #266bb3;
+    color: #99d6ff;
 }
 
-#input-terminal {
-    dock: bottom;
-    height: 3;
-    border: solid #664400;
-    background: #0f0b04;
-    color: #ffcc00;
-}
-
-#input-terminal:focus {
-    border: solid #ffb000;
+#janela-terminal-direta:focus {
+    border: double #4da6ff;
 }
 
 /* Barra de Progresso de Tokens */
 ProgressBar {
-    color: #ffb000;
+    color: #4da6ff;
 }
 
 ProgressBar > .progressbar--bar {
-    background: #664400;
+    background: #143d66;
 }
 
 ProgressBar > .progressbar--complete {
-    background: #ffb000;
+    background: #3399ff;
 }
 
 /* Rodapé Retrô */
 Footer {
-    background: #140d04;
-    color: #aa7700;
-    border-top: solid #442d00;
+    background: #071120;
+    color: #5c99e6;
+    border-top: solid #143d66;
 }

@@ -305,3 +305,4 @@ int fast_estimate_tokens(const char *text, size_t len) {
     int avg = (char_est + word_est + 1) / 2;
     return (avg > 0) ? avg : 1;
 }
+

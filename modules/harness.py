@@ -41,7 +41,8 @@ class AntigravityStrategy(IHarnessStrategy):
             )
 
         # Passagem por lista de argumentos sem shell=True para prevenir command injection
-        cmd = [agy_bin, "--print", prompt]
+        # Inclui --dangerously-skip-permissions para evitar bloqueio de permissão em modo headless (--print)
+        cmd = [agy_bin, "--dangerously-skip-permissions", "--print", prompt]
         if model_name:
             cmd.extend(["--model", model_name])
 

@@ -63,3 +63,4 @@ class ITerminalSession(Protocol):
 
     def close(self) -> None:
         ...
+

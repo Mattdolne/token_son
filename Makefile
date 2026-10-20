@@ -18,3 +18,4 @@ test: $(TARGET)
 
 run: $(TARGET)
 	.venv/bin/python app.py
+

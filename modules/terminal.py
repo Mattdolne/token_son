@@ -288,3 +288,4 @@ class LinuxTerminalSession:
             self.bridge.lib.pty_close_session(self.master_fd, self.child_pid)
             self.master_fd = -1
             self.child_pid = -1
+
