@@ -15,6 +15,7 @@ from app import RetroHarnessInterceptorApp
 from modules.harness import HarnessDispatcher
 from modules.infra import InfraObserver
 from modules.models import LocalModelManager
+from modules.quota import QuotaInspector
 from modules.sanitizer import PromptSanitizer
 from modules.telemetry import TelemetryCollector
 from modules.terminal import LinuxTerminalSession, NativePtyBridge
@@ -190,6 +191,22 @@ def test_native_c_pty_terminal_persistence_and_ansi(tmp_path: Path) -> None:
         assert "valor_123" in out
     finally:
         session.close()
+
+
+def test_quota_inspector_returns_structured_groups() -> None:
+    inspector = QuotaInspector()
+    quota = inspector.fetch_user_quota()
+    assert quota is not None
+    assert quota.account_email != ""
+    assert len(quota.groups) >= 3
+    # Verifica grupos clássicos do Antigravity
+    nomes_grupos = [g.display_name for g in quota.groups]
+    assert any("Gemini" in n for n in nomes_grupos)
+    assert any("Claude" in n or "GPT" in n for n in nomes_grupos)
+    for g in quota.groups:
+        for b in g.buckets:
+            assert 0 <= b.remaining_pct <= 100
+            assert "Renova" in b.reset_desc or "Disponível" in b.reset_desc
 
 
 def test_tui_app_mounts_and_handles_actions(tmp_path: Path) -> None:

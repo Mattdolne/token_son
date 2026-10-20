@@ -10,9 +10,9 @@ Construído com um visual **retrô clássico de terminal de fósforo azul** (est
 
 1. **Interceptação e Compressão de Prompts (PT-BR -> EN):** Recebe prompts em português, remove saudações/floreios e traduz para inglês técnico denso via SLM local (Ollama) ou **Compressor Híbrido PT->EN embutido** (quando o Ollama não está instalado), preservando 100% de blocos de código, variáveis e flags.
 2. **Revisão Humana (Human-in-the-Loop):** Exibe estimativa de tokens economizados (calculada em $O(N)$ pelo núcleo em C) e permite **Aprovar (`y`)**, **Editar (`e`)** ou **Descartar (`n`)** antes do envio.
-3. **Contador de Uso de Tokens estilo AGY / VS Code:** Mostra na lateral direita (e na barra superior) os tokens de entrada (EN), tokens de saída da resposta, tokens poupados na sessão e uso da janela de contexto do modelo ativo.
+3. **Painel de Cotas do Harness em Tempo Real (Conta Autenticada):** Exibe na lateral direita e na aba de telemetria a cota disponível exata por modelo e período de tempo (Semanal e 5 Horas para Gemini, Claude/GPT e Gemini 4 Argon), com tempo de renovação e barra de progresso visual, integrado à conta ativa (`macedodolne@gmail.com`).
 4. **Despacho Multi-Harness (Padrão Strategy):** Envia o prompt aprovado para o **Antigravity (`agy --dangerously-skip-permissions --print`)**, **Ollama Local**, **Google Gemini API** ou **Shell Pipe**.
-5. **Terminal Linux Real Manipulável Direto na Janela (PTY Nativo em C):** Permite digitar diretamente dentro da própria janela do terminal (`TerminalLinuxDireto`), com suporte a `Enter`, histórico nas setas `Cima`/`Baixo`, autocompletar com `Tab`, `Ctrl+L` para limpar e `Ctrl+C` (`SIGINT`), mantendo estado real de diretório (`cd`) e variáveis (`export`).
+5. **Terminal Linux Real Iniciado na Raiz (`/`):** Inicia diretamente na raiz do sistema como um terminal padrão, manipulável dentro da própria janela (`TerminalLinuxDireto`), com suporte a `Enter`, histórico nas setas `Cima`/`Baixo`, autocompletar com `Tab`, `Ctrl+L` para limpar e `Ctrl+C` (`SIGINT`), mantendo estado real de diretório (`cd`) e variáveis (`export`).
 
 ---
 

@@ -19,8 +19,10 @@ Este repositório contém o **Token Son (Harness Interceptor & Linux Terminal TU
    - Traduz e comprime prompts de PT-BR para EN técnico denso via Ollama (`localhost:11434`) ou **Compressor Híbrido PT->EN** (que traduz sentenças completas e aplica compressão telegráfica em inglês mesmo sem o Ollama instalado), preservando 100% dos blocos de código e flags.
 5. **Despachador Strategy (`modules/harness.py`):**
    - Implementa `AntigravityStrategy` (invocando `agy --dangerously-skip-permissions --print` sem `shell=True` para máxima segurança e evitando bloqueio de permissão em modo headless), `OllamaStrategy`, `GeminiApiStrategy` e `ShellPipeStrategy`.
-6. **Modelos e Telemetria (`modules/models.py`, `modules/telemetry.py`, `modules/infra.py`):**
-   - Inspeciona o binário `agy`, gerencia modelos do Ollama (`pull` e `keep_alive: 0`), monitora Docker/K8s com fallback offline e grava auditoria no SQLite (`prompt_ledger.db`).
+6. **Modelos, Cotas e Telemetria (`modules/models.py`, `modules/quota.py`, `modules/telemetry.py`, `modules/infra.py`):**
+   - Inspeciona o binário `agy` e consulta via Connect-RPC (`/exa.language_server_pb.LanguageServerService/RetrieveUserQuotaSummary`) as cotas ativas da conta (`macedodolne@gmail.com`) por família de modelos e janelas temporais (semanal / 5h).
+   - Gerencia modelos do Ollama (`pull` e `keep_alive: 0`), monitora Docker/K8s com fallback offline e grava auditoria no SQLite (`prompt_ledger.db`).
+   - Garante que o terminal inicie na raiz (`/`) por padrão como um terminal padrão.
 
 ---
 

@@ -28,6 +28,7 @@ import config
 from modules.harness import HarnessDispatcher
 from modules.infra import InfraObserver
 from modules.models import CatalogModelInfo, HarnessStatus, LocalModelManager
+from modules.quota import QuotaInspector, UserQuotaSummary
 from modules.sanitizer import PromptSanitizer, SanitizeResult
 from modules.telemetry import HardwareMetrics, LedgerStats, TelemetryCollector
 from modules.terminal import LinuxTerminalSession
@@ -238,12 +239,15 @@ class RetroHarnessInterceptorApp(App):
         self.sanitizador = PromptSanitizer()
         self.despachador = HarnessDispatcher()
         self.telemetria = TelemetryCollector(db_path=db_path)
-        self.sessao_terminal = LinuxTerminalSession(initial_cwd=config.BASE_DIR)
+        self.inspetor_cotas = QuotaInspector()
+        # O terminal inicia por padrão na raiz do sistema ('/') como solicitado
+        self.sessao_terminal = LinuxTerminalSession(initial_cwd="/")
 
         self._ultimo_resultado_sanitizacao: Optional[SanitizeResult] = None
         self._ultimas_metricas_hw: Optional[HardwareMetrics] = None
         self._ultimas_estatisticas_ledger: Optional[LedgerStats] = None
         self._status_antigravity: Optional[HarnessStatus] = None
+        self._sumario_cotas: Optional[UserQuotaSummary] = None
 
         # Contadores estilo AGY / VS Code para o Harness/Modelo em uso
         self._ultimo_tokens_prompt_en: int = 0
@@ -319,18 +323,11 @@ class RetroHarnessInterceptorApp(App):
                             )
 
                         with Vertical(classes="painel-retro", id="painel-tokens-modelo"):
-                            yield Label("├── USO DE TOKENS NO MODELO (ESTILO AGY) ──────┤", classes="titulo-painel")
+                            yield Label("├── COTAS DO HARNESS POR MODELO & PERÍODO ─────┤", classes="titulo-painel")
                             yield Static(
-                                "Modelo Ativo: gemini-3.8-flash-medium\n"
-                                "• Entrada (EN): 0 tok | Saída: 0 tok\n"
-                                "• Poupança na Sessão: 0 tok (~$0.0000)\n"
-                                "• Total Processado no Modelo: 0 tok",
-                                id="resumo-tokens-rapido",
+                                "Carregando cotas da conta autenticada no harness...",
+                                id="painel-cotas-harness",
                             )
-                            with Horizontal(id="linha-gauge"):
-                                yield Label("Janela Contexto: ")
-                                yield ProgressBar(total=config.TOKEN_WINDOW_MAX, show_eta=False, id="barra-tokens")
-                            yield Static("Status: Pronto.", id="banner-alerta")
 
                         with Vertical(classes="painel-retro", id="painel-infra"):
                             yield Label("└── INFRAESTRUTURA LOCAL (F9) ─────────────────┘", classes="titulo-painel")
@@ -381,6 +378,10 @@ class RetroHarnessInterceptorApp(App):
                     yield Static("Métricas de Hardware: CPU 0% | RAM: 0% | VRAM: 0.0 GB", id="hardware-detalhado")
 
                 with Vertical(classes="painel-retro"):
+                    yield Label("├── COTAS DE MODELOS POR CONTA E PERÍODO (AGY) ─┤", classes="titulo-painel")
+                    yield Static("Carregando cotas detalhadas...", id="cotas-detalhadas-tab3")
+
+                with Vertical(classes="painel-retro"):
                     yield Label("└── HISTÓRICO DE PROMPTS PROCESSADOS ─────────┘", classes="titulo-painel")
                     yield DataTable(id="tabela-historico-ledger")
 
@@ -413,7 +414,40 @@ class RetroHarnessInterceptorApp(App):
         self.trabalhador_atualizar_harnesses()
         self.trabalhador_atualizar_modelos()
         self.trabalhador_atualizar_infra()
+        self.trabalhador_atualizar_cotas()
         self.atualizar_telemetria_ui()
+
+    @work(thread=True)
+    def trabalhador_atualizar_cotas(self) -> None:
+        sumario = self.inspetor_cotas.fetch_user_quota()
+        self.call_from_thread(self._aplicar_sumario_cotas, sumario)
+
+    def _aplicar_sumario_cotas(self, sumario: UserQuotaSummary) -> None:
+        self._sumario_cotas = sumario
+        linhas = [
+            f"Conta Logada: {sumario.account_email}",
+            "─" * 46,
+        ]
+        for g in sumario.groups:
+            linhas.append(f"{g.display_name}")
+            for b in g.buckets:
+                blocos = int(b.remaining_pct / 10)
+                barra = "█" * blocos + "░" * (10 - blocos)
+                linhas.append(f"  {b.display_name:<26} {b.remaining_pct:>3}% [{barra}]")
+                if b.reset_desc:
+                    linhas.append(f"    └ {b.reset_desc}")
+            linhas.append("")
+        conteudo = "\n".join(linhas).rstrip()
+
+        try:
+            self.query_one("#painel-cotas-harness", Static).update(conteudo)
+        except Exception:
+            pass
+
+        try:
+            self.query_one("#cotas-detalhadas-tab3", Static).update(conteudo)
+        except Exception:
+            pass
 
     def _atualizar_texto_cabecalho(self) -> None:
         cabecalho = self.query_one("#top-status-bar", Static)
@@ -457,38 +491,50 @@ class RetroHarnessInterceptorApp(App):
 
         self._atualizar_texto_cabecalho()
 
-        # Painel de Uso de Tokens estilo AGY / VS Code na Aba 1
-        resumo_rapido = self.query_one("#resumo-tokens-rapido", Static)
-        resumo_rapido.update(
-            f"Harness/Modelo: {self.harness_alvo.upper()} ({self.modelo_harness_ativo})\n"
-            f"• Último Turno -> Prompt EN: {self._ultimo_tokens_prompt_en} tok | Resposta: {self._ultimo_tokens_resposta} tok\n"
-            f"• Tokens Poupados: +{self._ultimo_tokens_economizados} tok (Sessão: +{self._total_tokens_economizados_sessao} tok)\n"
-            f"• Acumulado no Modelo: {self._total_tokens_modelo_atual} tok (${stats.session_cost_usd:.4f})"
-        )
-
-        barra = self.query_one("#barra-tokens", ProgressBar)
-        tokens_barra = min(
-            self._total_tokens_modelo_atual + self.sanitizador.context_tokens_used,
-            config.TOKEN_WINDOW_MAX,
-        )
-        barra.update(progress=tokens_barra)
-
-        ctx_pct = (tokens_barra / config.TOKEN_WINDOW_MAX) * 100.0
-        avisos = []
-        if hw.ram_warning:
-            avisos.append(f"RAM ELEVADA ({hw.ram_percent:.0f}%)")
-        if hw.vram_warning:
-            avisos.append(f"VRAM ELEVADA ({hw.vram_percent:.0f}%)")
-        if ctx_pct >= config.TOKEN_WINDOW_WARNING_PCT:
-            avisos.append(f"JANELA >85% ({ctx_pct:.0f}%) - Pressione F5")
-
-        alerta_widget = self.query_one("#banner-alerta", Static)
-        if avisos:
-            alerta_widget.update("AVISO: " + " | ".join(avisos))
-        else:
-            alerta_widget.update(
-                f"Janela de Contexto: {ctx_pct:.1f}% ({tokens_barra}/{config.TOKEN_WINDOW_MAX} tok) | Dia: ${stats.daily_cost_usd:.4f}"
+        # Resumo de Tokens da sessão
+        try:
+            resumo_rapido = self.query_one("#resumo-tokens-rapido", Static)
+            resumo_rapido.update(
+                f"Harness/Modelo: {self.harness_alvo.upper()} ({self.modelo_harness_ativo})\n"
+                f"• Último Turno -> Prompt EN: {self._ultimo_tokens_prompt_en} tok | Resposta: {self._ultimo_tokens_resposta} tok\n"
+                f"• Tokens Poupados: +{self._ultimo_tokens_economizados} tok (Sessão: +{self._total_tokens_economizados_sessao} tok)\n"
+                f"• Acumulado no Modelo: {self._total_tokens_modelo_atual} tok (${stats.session_cost_usd:.4f})"
             )
+        except Exception:
+            pass
+
+        try:
+            barra = self.query_one("#barra-tokens", ProgressBar)
+            tokens_barra = min(
+                self._total_tokens_modelo_atual + self.sanitizador.context_tokens_used,
+                config.TOKEN_WINDOW_MAX,
+            )
+            barra.update(progress=tokens_barra)
+        except Exception:
+            pass
+
+        try:
+            alerta_widget = self.query_one("#banner-alerta", Static)
+            ctx_pct = (
+                (self._total_tokens_modelo_atual + self.sanitizador.context_tokens_used)
+                / config.TOKEN_WINDOW_MAX
+            ) * 100.0
+            avisos = []
+            if hw.ram_warning:
+                avisos.append(f"RAM ELEVADA ({hw.ram_percent:.0f}%)")
+            if hw.vram_warning:
+                avisos.append(f"VRAM ELEVADA ({hw.vram_percent:.0f}%)")
+            if ctx_pct >= config.TOKEN_WINDOW_WARNING_PCT:
+                avisos.append(f"JANELA >85% ({ctx_pct:.0f}%) - Pressione F5")
+
+            if avisos:
+                alerta_widget.update("AVISO: " + " | ".join(avisos))
+            else:
+                alerta_widget.update(
+                    f"Janela de Contexto: {ctx_pct:.1f}% | Dia: ${stats.daily_cost_usd:.4f}"
+                )
+        except Exception:
+            pass
 
         # Aba 3: Detalhes
         try:

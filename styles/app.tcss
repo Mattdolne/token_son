@@ -104,15 +104,16 @@ TabPane {
 }
 
 #painel-destino {
-    height: 38%;
+    height: 32%;
 }
 
 #painel-tokens-modelo {
-    height: 34%;
+    height: 48%;
+    overflow-y: auto;
 }
 
 #painel-infra {
-    height: 28%;
+    height: 20%;
 }
 
 #painel-terminal-full {
