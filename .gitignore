@@ -1,0 +1,17 @@
+# Ambiente Virtual e Cache Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Banco de dados local de telemetria
+*.db
+*.db-journal
+
+# Binários compilados localmente (recompilados automaticamente ou via Makefile)
+native/*.so
+native/*.o
+
+# Documentação didática pessoal (uso exclusivo local)
+GUIA_ARQUITETURA_E_CODIGO.md

@@ -1,0 +1,231 @@
+/* =========================================================================
+   TEMA RETRÔ: TERMINAL DE FÓSFORO ÂMBAR (VT220 / MAINFRAME MONOCROMÁTICO)
+   Design austero, sem cores chamativas, focado em legibilidade e alto contraste.
+   ========================================================================= */
+
+Screen {
+    background: #0f0b04;
+    color: #ffb000;
+}
+
+/* Barra Superior de Status (Header do Terminal) */
+#top-status-bar {
+    dock: top;
+    height: 3;
+    background: #1a1205;
+    color: #ffb000;
+    border-bottom: solid #664400;
+    padding: 0 1;
+    content-align: left middle;
+    text-style: bold;
+}
+
+#top-status-bar.alerta-memoria {
+    background: #331500;
+    color: #ffcc00;
+    border-bottom: double #ff9900;
+}
+
+/* Abas Principais de Navegação */
+TabbedContent {
+    height: 1fr;
+    background: #0f0b04;
+}
+
+Tabs {
+    dock: top;
+    background: #140d04;
+    color: #996b00;
+    border-bottom: solid #664400;
+    height: 3;
+}
+
+Tab {
+    padding: 0 2;
+    color: #aa7700;
+    background: #140d04;
+}
+
+Tab.-active {
+    color: #0f0b04;
+    background: #ffb000;
+    text-style: bold;
+}
+
+TabPane {
+    padding: 0 1;
+    background: #0f0b04;
+}
+
+/* Colunas e Caixas de Painéis */
+.linha-dupla {
+    layout: horizontal;
+    height: 1fr;
+}
+
+.coluna-esq {
+    width: 58%;
+    height: 1fr;
+    padding-right: 1;
+}
+
+.coluna-dir {
+    width: 42%;
+    height: 1fr;
+    padding-left: 1;
+}
+
+.painel-retro {
+    border: solid #664400;
+    background: #140d04;
+    padding: 0 1;
+    margin-bottom: 1;
+}
+
+.titulo-painel {
+    color: #ffcc00;
+    text-style: bold;
+    margin-bottom: 0;
+}
+
+/* Caixas de Texto (Prompt e Preview) */
+TextArea {
+    height: 1fr;
+    border: solid #442d00;
+    background: #080602;
+    color: #ffb000;
+}
+
+TextArea:focus {
+    border: solid #ffb000;
+}
+
+/* Linha de Ações e Botões Retrô */
+.linha-botoes {
+    layout: horizontal;
+    height: 3;
+    align: left middle;
+    margin-top: 0;
+}
+
+Button {
+    background: #241603;
+    color: #ffb000;
+    border: solid #774f00;
+    margin-right: 1;
+    min-width: 14;
+    height: 3;
+}
+
+Button:hover {
+    background: #3d2605;
+    color: #ffe082;
+    border: solid #ffb000;
+}
+
+Button:focus {
+    background: #ffb000;
+    color: #0f0b04;
+    text-style: bold;
+}
+
+Button.-primary {
+    background: #331f00;
+    color: #ffcc00;
+    border: solid #aa7200;
+}
+
+Button.-success {
+    background: #2a2200;
+    color: #ffea75;
+    border: solid #bfa004;
+}
+
+Button.-error {
+    background: #280b00;
+    color: #ff8844;
+    border: solid #882200;
+}
+
+/* Banners de Informação e Notificação */
+#banner-economia {
+    height: 1;
+    color: #ffe082;
+    text-style: bold;
+}
+
+#caixa-docker, #caixa-k8s, #caixa-modelos-instalados, #caixa-catalogo {
+    height: 1fr;
+    overflow-y: auto;
+    background: #080602;
+    border: solid #442d00;
+    padding: 0 1;
+    color: #ffb000;
+}
+
+/* Tabela e Seletores Retrô */
+DataTable {
+    background: #080602;
+    color: #ffb000;
+    border: solid #442d00;
+    height: 1fr;
+}
+
+DataTable > .datatable--header {
+    background: #1a1205;
+    color: #ffcc00;
+    text-style: bold;
+}
+
+Select {
+    background: #1a1205;
+    color: #ffb000;
+    border: solid #664400;
+}
+
+SelectCurrent {
+    background: #1a1205;
+    color: #ffb000;
+}
+
+/* Terminal Integrado */
+#console-terminal {
+    height: 1fr;
+    background: #050401;
+    border: solid #664400;
+    color: #ffb000;
+    overflow-y: auto;
+    padding: 0 1;
+}
+
+#input-terminal {
+    dock: bottom;
+    height: 3;
+    border: solid #664400;
+    background: #0f0b04;
+    color: #ffcc00;
+}
+
+#input-terminal:focus {
+    border: solid #ffb000;
+}
+
+/* Barra de Progresso de Tokens */
+ProgressBar {
+    color: #ffb000;
+}
+
+ProgressBar > .progressbar--bar {
+    background: #664400;
+}
+
+ProgressBar > .progressbar--complete {
+    background: #ffb000;
+}
+
+/* Rodapé Retrô */
+Footer {
+    background: #140d04;
+    color: #aa7700;
+    border-top: solid #442d00;
+}
